@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Absensi 7A–8F</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f9fc; margin: 0; padding: 0; }
+    header { background: #2f80ed; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+    .container { padding: 2rem; }
+    select, input[type="date"] { padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc; margin-right: 1rem; margin-bottom: 1rem; }
+    table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.1); margin-top: 1rem; }
+    th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #eee; }
+    th { background: #f0f4f8; }
+    .action-links a { margin-right: 0.5rem; color: #2f80ed; text-decoration: none; font-weight: bold; }
+    .rekap { margin-top: 2rem; background: white; padding: 1rem; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Absensi Informatika</h1>
+    <div>Guru: IGHLI KHOIRUL FALAH</div>
+  </header>
+
+  <div class="container">
+    <label for="kelas">Pilih Kelas:</label>
+    <select id="kelas" onchange="tampilkanKelas()">
+      <option value="">-- Pilih Kelas --</option>
+      <option value="7A">Kelas 7A</option>
+      <option value="7B">Kelas 7B</option>
+      <option value="7C">Kelas 7C</option>
+      <option value="7D">Kelas 7D</option>
+      <option value="7E">Kelas 7E</option>
+      <option value="8A">Kelas 8A</option>
+      <option value="8B">Kelas 8B</option>
+      <option value="8C">Kelas 8C</option>
+      <option value="8D">Kelas 8D</option>
+      <option value="8E">Kelas 8E</option>
+      <option value="8F">Kelas 8F</option>
+    </select>
+
+    <label for="tanggal">Tanggal:</label>
+    <input type="date" id="tanggal" required>
+
+    <label for="hari">Hari:</label>
+    <select id="hari" required>
+      <option value="">-- Pilih Hari --</option>
+      <option value="Selasa">Selasa</option>
+      <option value="Rabu">Rabu</option>
+      <option value="Kamis">Kamis</option>
+      <option value="Jumat">Jumat</option>
+    </select>
+
+    <div id="absenArea"></div>
+    <div class="rekap" id="rekapArea" style="display:none">
+      <h3>Rekap Kehadiran</h3>
+      <p>Tanggal: <span id="rekapTanggal">-</span></p>
+      <p>Hari: <span id="rekapHari">-</span></p>
+      <p>Total Hadir: <span id="rekapHadir">0</span></p>
+      <p>Total Izin: <span id="rekapIzin">0</span></p>
+      <p>Total Sakit: <span id="rekapSakit">0</span></p>
+      <p>Total Alpha: <span id="rekapAlpha">0</span></p>
+    </div>
+  </div>
+
+  <script>
+    const absenArea = document.getElementById('absenArea');
+    const rekapArea = document.getElementById('rekapArea');
+    const statusList = ['Hadir', 'Izin', 'Sakit', 'Alpha'];
+
+    function tampilkanKelas() {
+      const kelas = document.getElementById('kelas').value;
+      const tanggal = document.getElementById('tanggal').value;
+      const hari = document.getElementById('hari').value;
+
+      if (!kelas || !tanggal || !hari) {
+        absenArea.innerHTML = '<p style="color:red">Lengkapi pilihan kelas, tanggal, dan hari terlebih dahulu.</p>';
+        rekapArea.style.display = 'none';
+        return;
+      }
+
+      let html = `<h2>Absensi ${kelas} - ${hari}, ${tanggal}</h2>`;
+      html += `<table><thead><tr><th>No</th><th>Nama Siswa</th><th>NIS</th><th>Status</th><th>Jam Masuk</th><th>Jam Pulang</th><th>Aksi</th></tr></thead><tbody>`;
+
+      for (let i = 1; i <= 50; i++) {
+        html += `<tr>
+          <td>${i}</td>
+          <td contenteditable="true">-</td>
+          <td contenteditable="true">-</td>
+          <td>
+            <select onchange="hitungRekap()">
+              <option value="">Pilih</option>
+              ${statusList.map(s => `<option>${s}</option>`).join('')}
+            </select>
+          </td>
+          <td contenteditable="true">-</td>
+          <td contenteditable="true">-</td>
+          <td class="action-links"><a href="#">Edit</a><a href="#">Detail</a></td>
+        </tr>`;
+      }
+
+      html += `</tbody></table>`;
+      absenArea.innerHTML = html;
+      document.getElementById('rekapTanggal').textContent = tanggal;
+      document.getElementById('rekapHari').textContent = hari;
+      rekapArea.style.display = 'block';
+      hitungRekap();
+    }
+
+    function hitungRekap() {
+      let hadir = 0, izin = 0, sakit = 0, alpha = 0;
+      document.querySelectorAll('#absenArea select').forEach(select => {
+        switch(select.value) {
+          case 'Hadir': hadir++; break;
+          case 'Izin': izin++; break;
+          case 'Sakit': sakit++; break;
+          case 'Alpha': alpha++; break;
+        }
+      });
+      document.getElementById('rekapHadir').textContent = hadir;
+      document.getElementById('rekapIzin').textContent = izin;
+      document.getElementById('rekapSakit').textContent = sakit;
+      document.getElementById('rekapAlpha').textContent = alpha;
+    }
+  </script>
+</body>
+</html>
